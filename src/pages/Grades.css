@@ -1,0 +1,254 @@
+/* ============================================================
+   GRADES PAGE
+   ============================================================ */
+
+.grades-intro {
+  margin-bottom: 3rem;
+}
+
+.grades-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Grade Card */
+.grade-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: var(--transition);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.grade-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, rgba(4, 8, 15, 0.4), transparent);
+  pointer-events: none;
+}
+
+.grade-card--gold {
+  border-color: rgba(245, 197, 24, 0.2);
+  background: linear-gradient(160deg, rgba(245, 197, 24, 0.05) 0%, var(--bg-card) 50%);
+}
+
+.grade-card--blue {
+  border-color: rgba(0, 168, 255, 0.15);
+  background: linear-gradient(160deg, rgba(0, 168, 255, 0.04) 0%, var(--bg-card) 50%);
+}
+
+.grade-card--silver {
+  border-color: rgba(176, 196, 216, 0.1);
+}
+
+.grade-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.grade-card--gold:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), var(--glow-gold);
+}
+
+.grade-card--blue:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), var(--glow-blue);
+}
+
+/* Header */
+.grade-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.grade-card__badge-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.grade-card__letter {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem;
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+}
+
+.grade-card--gold .grade-card__letter {
+  background: linear-gradient(135deg, #FFD700, #F5C518, #C9A008);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.grade-card--blue .grade-card__letter {
+  background: linear-gradient(135deg, #00A8FF, #0077CC);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.grade-card--silver .grade-card__letter {
+  background: linear-gradient(135deg, #B0C4D8, #7A8FA6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.grade-card__tier {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.grade-card--gold .grade-card__tier { color: #F5C518; }
+.grade-card--blue .grade-card__tier { color: #00A8FF; }
+.grade-card--silver .grade-card__tier { color: #7A8FA6; }
+
+/* Stars */
+.grade-card__stars {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.grade-card__star {
+  color: rgba(255, 255, 255, 0.12);
+}
+
+.grade-card--gold .grade-card__star--filled { color: #F5C518; }
+.grade-card--blue .grade-card__star--filled { color: #00A8FF; }
+.grade-card--silver .grade-card__star--filled { color: #B0C4D8; }
+
+/* Content */
+.grade-card__label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.grade-card__fee {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.grade-card--gold .grade-card__fee { color: #F5C518; }
+.grade-card--blue .grade-card__fee { color: #00A8FF; }
+.grade-card--silver .grade-card__fee { color: #B0C4D8; }
+
+.grade-card__fee-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+}
+
+.grade-card__desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+/* Traits */
+.grade-card__traits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.grade-card__traits-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.grade-card__trait {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.grade-card__trait-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.grade-card--gold .grade-card__trait-dot { background: #F5C518; }
+.grade-card--blue .grade-card__trait-dot { background: #00A8FF; }
+.grade-card--silver .grade-card__trait-dot { background: #7A8FA6; }
+
+/* Note */
+.grades-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  background: rgba(0, 168, 255, 0.04);
+  border: 1px solid rgba(0, 168, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 3rem;
+}
+
+.grades-note strong { color: var(--electric-blue); }
+.grades-note__icon { font-size: 1.25rem; flex-shrink: 0; }
+.grades-note__text { flex: 1; }
+
+/* CTA */
+.grades-cta {
+  text-align: center;
+  padding: 3.5rem;
+  background: rgba(245, 197, 24, 0.03);
+  border: 1px solid rgba(245, 197, 24, 0.12);
+  border-radius: var(--radius-xl);
+}
+
+.grades-cta__title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.grades-cta__sub {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .grades-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto 3rem; }
+}

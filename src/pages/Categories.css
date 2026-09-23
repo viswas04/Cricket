@@ -1,0 +1,175 @@
+/* ============================================================
+   CATEGORIES PAGE
+   ============================================================ */
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+  margin-top: 3rem;
+}
+
+.cat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem;
+  position: relative;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.cat-card--gold::before { background: linear-gradient(90deg, #F5C518, #FFD700); }
+.cat-card--blue::before { background: linear-gradient(90deg, #00A8FF, #0077CC); }
+.cat-card--green::before { background: linear-gradient(90deg, #43A047, #2E7D32); }
+.cat-card--red::before { background: linear-gradient(90deg, #EF5350, #B71C1C); }
+
+.cat-card--featured {
+  border-color: rgba(245, 197, 24, 0.25);
+  background: rgba(245, 197, 24, 0.03);
+}
+
+.cat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  border-color: rgba(245, 197, 24, 0.2);
+}
+
+.cat-card__badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(245, 197, 24, 0.12);
+  border: 1px solid rgba(245, 197, 24, 0.3);
+  color: #F5C518;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+}
+
+.cat-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.cat-card__emoji {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 12px rgba(245, 197, 24, 0.3));
+}
+
+.cat-card__title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 0.375rem;
+}
+
+.cat-card__fee {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.25rem;
+  letter-spacing: 0.04em;
+  color: #F5C518;
+  line-height: 1;
+}
+
+.cat-card__fee-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cat-card__desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.cat-card__skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cat-card__skills-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.cat-card__skill {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.cat-card__skill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.cat-card--blue .cat-card__skill-dot { background: var(--electric-blue); }
+.cat-card--green .cat-card__skill-dot { background: var(--green); }
+.cat-card--red .cat-card__skill-dot { background: var(--red); }
+
+.cat-card__btn {
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Note */
+.categories-note {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(0, 168, 255, 0.04);
+  border: 1px solid rgba(0, 168, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.categories-note strong {
+  color: var(--electric-blue);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .categories-grid { grid-template-columns: 1fr; }
+}

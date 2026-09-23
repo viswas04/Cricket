@@ -1,0 +1,111 @@
+/* ============================================================
+   FACILITIES PAGE
+   ============================================================ */
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.facility-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.facility-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.facility-card:hover::before { opacity: 1; }
+
+.facility-card--gold::before { background: linear-gradient(90deg, #F5C518, #FFD700); }
+.facility-card--blue::before { background: linear-gradient(90deg, #00A8FF, #0077CC); }
+.facility-card--green::before { background: linear-gradient(90deg, #43A047, #2E7D32); }
+.facility-card--silver::before { background: linear-gradient(90deg, #B0C4D8, #7A8FA6); }
+.facility-card--red::before { background: linear-gradient(90deg, #EF5350, #B71C1C); }
+
+.facility-card:hover {
+  border-color: rgba(245, 197, 24, 0.2);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.facility-card__emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.facility-card__title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.625rem;
+  letter-spacing: 0.02em;
+}
+
+.facility-card__desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* All Inclusive Banner */
+.facilities-all-inc {
+  background: rgba(67, 160, 71, 0.06);
+  border: 1px solid rgba(67, 160, 71, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 2rem 2.5rem;
+}
+
+.facilities-all-inc__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.facilities-all-inc__icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.facilities-all-inc__title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #43A047;
+  margin-bottom: 0.5rem;
+}
+
+.facilities-all-inc__sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .facilities-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .facilities-grid { grid-template-columns: 1fr; }
+  .facilities-all-inc { padding: 1.5rem; }
+}
