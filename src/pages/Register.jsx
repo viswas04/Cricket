@@ -52,6 +52,7 @@ export default function Register() {
   const [photoPreview, setPhotoPreview] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const fileRef = useRef()
 
   function handleChange(e) {
@@ -80,7 +81,7 @@ export default function Register() {
     reader.readAsDataURL(file)
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const errs = validate(form)
     if (Object.keys(errs).length > 0) {
@@ -90,13 +91,42 @@ export default function Register() {
       if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
+    
     setLoading(true)
-    // Simulate submission
-    setTimeout(() => {
-      setLoading(false)
+    setSubmitError('')
+
+    try {
+      const age = Math.floor((Date.now() - new Date(form.dob)) / 31557600000)
+
+      const body = new URLSearchParams()
+      body.append('fullName', form.fullName)
+      body.append('dateOfBirth', form.dob)
+      body.append('age', String(age))
+      body.append('mobileNumber', form.mobile)
+      body.append('email', form.email)
+      body.append('city', form.city)
+      body.append('playingRole', form.playingRole)
+      body.append('cricketExperience', form.experience)
+      body.append('emergencyContact', form.emergencyContact)
+      body.append('playerPhoto', photoPreview || '')
+
+      await fetch('https://script.google.com/macros/s/AKfycbwFbDLI0DVLX-P-zhgr85XYtwWFbimKiLZFasMgDUwfsrYncs_M_goicb7Gdqevuw1C/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: body.toString()
+      })
+
+      // Since mode is no-cors, the response is opaque. Treat resolution as success.
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, 2000)
+      setForm(initialForm)
+      setPhotoPreview(null)
+    } catch (err) {
+      setSubmitError('Unable to submit registration. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
@@ -385,6 +415,12 @@ export default function Register() {
                 {errors.photo && <div className="reg-error"><AlertCircle size={12} />{errors.photo}</div>}
               </div>
 
+              {submitError && (
+                <div className="reg-global-error" style={{ color: '#ff4d4d', background: 'rgba(255,77,77,0.1)', padding: '1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', border: '1px solid rgba(255,77,77,0.2)' }}>
+                  <AlertCircle size={18} /> {submitError}
+                </div>
+              )}
+
               {/* Submit */}
               <button
                 type="submit"
@@ -395,7 +431,7 @@ export default function Register() {
                 {loading ? (
                   <>
                     <Loader size={18} className="reg-spinner" />
-                    Submitting Registration...
+                    SUBMITTING REGISTRATION...
                   </>
                 ) : (
                   <>
@@ -429,7 +465,7 @@ function SuccessScreen({ name, role }) {
         <div className="success-icon">
           <CheckCircle size={48} />
         </div>
-        <div className="success-badge">Registration Successful!</div>
+        <div className="success-badge">REGISTRATION SUCCESSFUL</div>
         <h1 className="success-title">
           Welcome to <span className="gold-text">NGPL!</span>
         </h1>
@@ -437,7 +473,7 @@ function SuccessScreen({ name, role }) {
           🏏 {name} — <span>{role}</span>
         </p>
         <p className="success-desc">
-          Your registration has been received successfully. Our team will review your application and contact you with further details about the trial schedule at <strong>Tau Devi Lal Stadium, Gurgaon</strong>.
+          Your NGPL registration has been submitted successfully. Our team will review your application and contact you with further details about the trial schedule at <strong>Tau Devi Lal Stadium, Gurgaon</strong>.
         </p>
         <div className="success-steps">
           <div className="success-step">

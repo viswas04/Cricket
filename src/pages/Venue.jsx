@@ -1,8 +1,27 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { MapPin, ArrowRight, Navigation } from 'lucide-react'
 import './Venue.css'
 
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal')
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target) }
+        })
+      },
+      { threshold: 0.1 }
+    )
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+}
+
 export default function Venue() {
+  useScrollReveal()
+
   return (
     <div className="venue-page">
 
@@ -26,15 +45,14 @@ export default function Venue() {
       <section className="section">
 
         {/* Venue Main Card */}
-        <div className="venue-main-card">
+        <div className="venue-main-card reveal">
           <div className="venue-main-card__left">
             <div className="venue-badge">
-              <MapPin size={14} />
-              Official Venue
+              <MapPin size={13} /> Official Venue
             </div>
             <h2 className="venue-name">Tau Devi Lal<br />Stadium</h2>
             <div className="venue-location">
-              <MapPin size={16} className="venue-location__icon" />
+              <MapPin size={15} className="venue-location__icon" />
               <span>Gurgaon, Haryana, India</span>
             </div>
             <p className="venue-desc">
@@ -66,7 +84,7 @@ export default function Venue() {
               <div className="venue-map-placeholder__bg" />
               <div className="venue-map-placeholder__inner">
                 <div className="venue-map-pin">
-                  <MapPin size={32} />
+                  <MapPin size={30} />
                 </div>
                 <h3 className="venue-map-placeholder__name">Tau Devi Lal Stadium</h3>
                 <p className="venue-map-placeholder__loc">Gurgaon, Haryana</p>
@@ -86,7 +104,7 @@ export default function Venue() {
         </div>
 
         {/* Eligibility Banner */}
-        <div className="venue-elig-banner">
+        <div className="venue-elig-banner reveal">
           <div className="venue-elig-banner__content">
             <div className="venue-elig-banner__icon">🎯</div>
             <div>

@@ -1,6 +1,23 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Star } from 'lucide-react'
 import './Grades.css'
+
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal')
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target) }
+        })
+      },
+      { threshold: 0.1 }
+    )
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+}
 
 const grades = [
   {
@@ -54,6 +71,8 @@ const grades = [
 ]
 
 export default function Grades() {
+  useScrollReveal()
+
   return (
     <div className="grades-page">
 
@@ -75,21 +94,21 @@ export default function Grades() {
       </div>
 
       <section className="section">
-        {/* How grading works */}
+        {/* Intro */}
         <div className="grades-intro">
-          <div className="grades-intro__text">
-            <div className="section-label">How It Works</div>
-            <h2 className="section-title">Performance-Based <span className="gold-text">Grading</span></h2>
-            <p className="section-subtitle">
-              After initial registration and trials, expert selectors evaluate every player across key performance metrics. Grades are assigned objectively based on demonstrated ability — not age or experience.
-            </p>
-          </div>
+          <div className="section-label reveal">How It Works</div>
+          <h2 className="section-title reveal reveal-delay-1">
+            Performance-Based <span className="gold-text">Grading</span>
+          </h2>
+          <p className="section-subtitle reveal reveal-delay-2">
+            After initial registration and trials, expert selectors evaluate every player across key performance metrics. Grades are assigned objectively based on demonstrated ability — not age or experience.
+          </p>
         </div>
 
         {/* Grade Cards */}
         <div className="grades-grid">
           {grades.map((g, i) => (
-            <div key={i} className={`grade-card grade-card--${g.color}`}>
+            <div key={i} className={`grade-card grade-card--${g.color} reveal reveal-delay-${i + 1}`}>
               <div className="grade-card__header">
                 <div className="grade-card__badge-wrap">
                   <div className="grade-card__letter">{g.grade}</div>
@@ -99,7 +118,7 @@ export default function Grades() {
                   {[...Array(3)].map((_, s) => (
                     <Star
                       key={s}
-                      size={18}
+                      size={17}
                       className={`grade-card__star ${s < g.starCount ? 'grade-card__star--filled' : ''}`}
                     />
                   ))}
@@ -126,7 +145,7 @@ export default function Grades() {
         </div>
 
         {/* Note Box */}
-        <div className="grades-note">
+        <div className="grades-note reveal">
           <div className="grades-note__icon">📋</div>
           <div className="grades-note__text">
             <strong>Important:</strong> Grade assignment is made by NGPL selectors after the trial process. Initial registration fee is ₹199. Grade-specific fees are payable only after grade announcement. All grade fees include: jersey, accommodation, food, energy drinks, and match facilities.
@@ -134,7 +153,7 @@ export default function Grades() {
         </div>
 
         {/* CTA */}
-        <div className="grades-cta">
+        <div className="grades-cta reveal">
           <h3 className="grades-cta__title">Ready to Show Your Grade?</h3>
           <p className="grades-cta__sub">Register for ₹199 and let your game speak for itself during trials.</p>
           <Link to="/register" className="btn btn-primary btn-lg">
