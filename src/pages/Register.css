@@ -619,3 +619,748 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .success-steps { flex-direction: column; }
   .success-step-arrow { transform: rotate(90deg); }
 }
+
+/* ============================================================
+   GLOBAL ERROR BOX
+   ============================================================ */
+.reg-global-error {
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+/* ============================================================
+   PAYMENT PAGE
+   ============================================================ */
+.pay-page {
+  min-height: calc(100vh - 72px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 0 5rem;
+}
+
+.pay-page__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pay-page__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+
+.pay-page__orb--gold {
+  width: 700px;
+  height: 700px;
+  top: -250px;
+  left: -200px;
+  background: radial-gradient(circle, rgba(245, 197, 24, 0.09) 0%, transparent 70%);
+}
+
+.pay-page__orb--blue {
+  width: 600px;
+  height: 600px;
+  bottom: -150px;
+  right: -150px;
+  background: radial-gradient(circle, rgba(0, 168, 255, 0.07) 0%, transparent 70%);
+}
+
+.pay-page__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245, 197, 24, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 197, 24, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.pay-page__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ── Step Indicator ── */
+.pay-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.5rem 1.5rem;
+}
+
+.pay-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+}
+
+.pay-step__num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.pay-step--active {
+  color: #F5C518;
+}
+
+.pay-step--active .pay-step__num {
+  background: rgba(245, 197, 24, 0.15);
+  border-color: rgba(245, 197, 24, 0.4);
+  color: #F5C518;
+  box-shadow: 0 0 14px rgba(245, 197, 24, 0.25);
+}
+
+.pay-step--done {
+  color: #43A047;
+}
+
+.pay-step--done .pay-step__num {
+  background: rgba(67, 160, 71, 0.12);
+  border-color: rgba(67, 160, 71, 0.35);
+  color: #43A047;
+}
+
+.pay-step__line {
+  width: 28px;
+  height: 1px;
+  background: var(--border);
+  margin: 0 0.25rem;
+  flex-shrink: 0;
+}
+
+/* ── Pay Card ── */
+.pay-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2.25rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  box-shadow:
+    0 0 0 1px rgba(245, 197, 24, 0.04),
+    0 8px 40px rgba(0, 0, 0, 0.35),
+    0 0 60px rgba(245, 197, 24, 0.05);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.pay-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.pay-card__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: rgba(245, 197, 24, 0.1);
+  border: 1px solid rgba(245, 197, 24, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F5C518;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.15);
+}
+
+.pay-card__icon--blue {
+  background: rgba(0, 168, 255, 0.1);
+  border-color: rgba(0, 168, 255, 0.25);
+  color: var(--electric-blue);
+  box-shadow: 0 0 20px rgba(0, 168, 255, 0.12);
+}
+
+.pay-card__label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.pay-card__amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  letter-spacing: 0.04em;
+  color: #F5C518;
+  line-height: 1;
+  filter: drop-shadow(0 0 16px rgba(245, 197, 24, 0.35));
+}
+
+.pay-card__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.pay-card__divider {
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── UPI Block ── */
+.pay-upi-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  text-align: center;
+  background: rgba(245, 197, 24, 0.03);
+  border: 1px solid rgba(245, 197, 24, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.pay-upi-block__label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pay-upi-id {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #F5C518;
+  letter-spacing: 0.04em;
+  word-break: break-all;
+}
+
+.pay-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Primary UPI Button ── */
+.btn-upi-pay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.1rem 1.5rem;
+  background: linear-gradient(135deg, #F5C518 0%, #E8A800 100%);
+  color: #0A0E1A;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  box-shadow: 0 4px 24px rgba(245, 197, 24, 0.45), 0 2px 8px rgba(245, 197, 24, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-upi-pay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+  border-radius: inherit;
+}
+
+.btn-upi-pay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(245, 197, 24, 0.55), 0 4px 16px rgba(245, 197, 24, 0.25);
+}
+
+.btn-upi-pay:active {
+  transform: translateY(0);
+}
+
+/* ── Fallback Section ── */
+.pay-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+}
+
+.pay-fallback__label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.pay-fallback__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.pay-fallback__id {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.95rem;
+  color: #fff;
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
+.btn-copy-upi {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 0.875rem;
+  background: rgba(0, 168, 255, 0.1);
+  border: 1px solid rgba(0, 168, 255, 0.3);
+  border-radius: 6px;
+  color: var(--electric-blue);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.btn-copy-upi:hover {
+  background: rgba(0, 168, 255, 0.18);
+  box-shadow: 0 0 12px rgba(0, 168, 255, 0.2);
+}
+
+.btn-copy-upi--copied {
+  background: rgba(67, 160, 71, 0.12);
+  border-color: rgba(67, 160, 71, 0.35);
+  color: #43A047;
+}
+
+.pay-apps-hint {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── Continue Block ── */
+.pay-continue-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pay-continue-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  text-align: center;
+  margin: 0;
+}
+
+.pay-continue-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+/* Registration ID note below card */
+.pay-reg-id-note {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.pay-reg-id-note strong {
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+/* ── UTR Input ── */
+.utr-input {
+  font-family: 'Roboto Mono', 'Courier New', monospace !important;
+  letter-spacing: 0.04em;
+  font-size: 1rem !important;
+}
+
+/* UTR Info Box */
+.utr-info-box {
+  background: rgba(245, 197, 24, 0.04);
+  border: 1px solid rgba(245, 197, 24, 0.12);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.utr-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.utr-info-row:last-child {
+  border-bottom: none;
+}
+
+.utr-info-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.utr-info-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  text-align: right;
+  word-break: break-all;
+}
+
+.utr-info-value--gold {
+  color: #F5C518;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   DONE SCREEN — Registration ID Card
+   ============================================================ */
+.done-id-card {
+  background: rgba(245, 197, 24, 0.04);
+  border: 1px solid rgba(245, 197, 24, 0.18);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin: 0 auto 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 0 40px rgba(245, 197, 24, 0.08);
+}
+
+.done-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.done-id-divider {
+  height: 1px;
+  background: rgba(245, 197, 24, 0.1);
+}
+
+.done-id-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.done-id-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #F5C518;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.done-id-value--mono {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.done-id-status {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FFB300;
+  text-align: right;
+}
+
+/* ── Mobile responsive for pay sections ── */
+@media (max-width: 640px) {
+  .pay-page { padding: 2rem 0 4rem; }
+  .pay-page__inner { padding: 0 1rem; gap: 1.5rem; }
+  .pay-card { padding: 1.75rem 1.25rem; }
+  .pay-steps { padding: 0.4rem 0.75rem; }
+  .pay-step span:last-child { display: none; }
+  .pay-step__line { width: 16px; }
+  .btn-upi-pay { font-size: 1.1rem; padding: 1.2rem 1rem; }
+  .pay-fallback__row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .btn-copy-upi { width: 100%; justify-content: center; }
+  .pay-upi-id { font-size: 1.1rem; }
+  .done-id-row { padding: 0.875rem 1rem; flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+  .done-id-value, .done-id-status { text-align: left; }
+  .utr-info-row { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+  .utr-info-value { text-align: left; }
+  /* QR: stack on mobile */
+  .pay-card--wide { flex-direction: column; gap: 0; }
+  .pay-col--info { padding-bottom: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 1.75rem; }
+  .pay-col--qr { padding-top: 1.75rem; }
+  .qr-code-box svg { width: 200px !important; height: 200px !important; }
+}
+
+/* ============================================================
+   TWO-COLUMN PAYMENT CARD
+   ============================================================ */
+.pay-card--wide {
+  /* override single-column flex with two-column grid */
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pay-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.pay-col--info {
+  flex: 1;
+  gap: 1.75rem;
+  padding: 2.5rem 2.25rem;
+  border-right: 1px solid var(--border);
+  min-width: 0;
+}
+
+.pay-col--qr {
+  flex-shrink: 0;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: rgba(245, 197, 24, 0.02);
+}
+
+/* ── QR Wrapper ── */
+.qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.qr-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #F5C518;
+  background: rgba(245, 197, 24, 0.08);
+  border: 1px solid rgba(245, 197, 24, 0.2);
+  border-radius: 100px;
+  padding: 0.3rem 0.875rem;
+}
+
+.qr-code-box {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 1px rgba(245, 197, 24, 0.25),
+    0 0 28px rgba(245, 197, 24, 0.18),
+    0 4px 24px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.25s ease;
+}
+
+.qr-code-box:hover {
+  box-shadow:
+    0 0 0 2px rgba(245, 197, 24, 0.5),
+    0 0 40px rgba(245, 197, 24, 0.28),
+    0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.qr-sub {
+  text-align: center;
+}
+
+.qr-sub__line1 {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.2rem;
+}
+
+.qr-sub__amount {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #F5C518;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.qr-upi-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 0.875rem;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.qr-upi-id {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: #fff;
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
+.qr-apps-note {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* left-aligned UPI block modifier (inside info col) */
+.pay-upi-block--left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* ============================================================
+   QR-ONLY PAYMENT CARD
+   ============================================================ */
+.qr-only-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  box-shadow:
+    0 0 0 1px rgba(245, 197, 24, 0.05),
+    0 8px 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(245, 197, 24, 0.06);
+  animation: fadeInUp 0.45s ease forwards;
+}
+
+.qr-only-box {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(245, 197, 24, 0.3),
+    0 0 32px rgba(245, 197, 24, 0.2),
+    0 6px 28px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.25s ease;
+}
+
+.qr-only-box:hover {
+  box-shadow:
+    0 0 0 2px rgba(245, 197, 24, 0.55),
+    0 0 48px rgba(245, 197, 24, 0.3),
+    0 10px 36px rgba(0, 0, 0, 0.5);
+}
+
+.qr-only-upi-id {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #F5C518;
+  letter-spacing: 0.04em;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Mobile: keep QR large and centered */
+@media (max-width: 640px) {
+  .qr-only-card { padding: 2rem 1.25rem; }
+  .qr-only-box svg { width: 240px !important; height: 240px !important; }
+  .qr-only-upi-id { font-size: 1rem; }
+}

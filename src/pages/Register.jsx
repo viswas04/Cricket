@@ -1,8 +1,22 @@
 import { useState, useRef } from 'react'
-import { CheckCircle, Upload, ArrowRight, AlertCircle, User, Phone, Mail, MapPin, Calendar, Activity, Clock, Camera, Loader } from 'lucide-react'
+import {
+  CheckCircle, Upload, ArrowRight, AlertCircle, User, Phone, Mail,
+  MapPin, Calendar, Activity, Clock, Camera, Loader, Copy, CreditCard,
+  Smartphone, ShieldCheck, ClipboardCheck, QrCode
+} from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import './Register.css'
 
-const PLAYING_ROLES = ['Batsman', 'Bowler', 'All-Rounder', 'Wicket Keeper-Batsman']
+/* ─── Constants ─────────────────────────────────────────────── */
+const APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbwFbDLI0DVLX-P-zhgr85XYtwWFbimKiLZFasMgDUwfsrYncs_M_goicb7Gdqevuw1C/exec'
+
+const UPI_ID   = '7989318524-2@ybl'
+const UPI_NAME = 'Next%20Gen%20Premier%20League'
+const UPI_AMT  = '199'
+const UPI_LINK = `upi://pay?pa=7989318524-2@ybl&pn=${UPI_NAME}&am=${UPI_AMT}&cu=INR`
+
+const PLAYING_ROLES    = ['Batsman', 'Bowler', 'All-Rounder', 'Wicket Keeper-Batsman']
 const EXPERIENCE_LEVELS = [
   'Beginner (0–1 years)',
   'Developing (1–3 years)',
@@ -11,28 +25,31 @@ const EXPERIENCE_LEVELS = [
   'Experienced (8+ years)',
 ]
 
-const initialForm = {
-  fullName: '',
-  dob: '',
-  mobile: '',
-  email: '',
-  city: '',
-  playingRole: '',
-  experience: '',
-  emergencyContact: '',
-  photo: null,
+/* ─── Helpers ────────────────────────────────────────────────── */
+// Fallback-only: used when the server response cannot be read.
+// Server (Apps Script) is the authoritative source of sequential IDs.
+function localFallbackId() {
+  const year = new Date().getFullYear()
+  const ts   = String(Date.now()).slice(-4)
+  return `NGPL-${year}-${ts}`
 }
 
-const initialErrors = {}
+function calcAge(dob) {
+  return Math.floor((Date.now() - new Date(dob)) / 31557600000)
+}
+
+
+/* ─── Validation ────────────────────────────────────────────── */
+const initialForm = {
+  fullName: '', dob: '', mobile: '', email: '',
+  city: '', playingRole: '', experience: '', emergencyContact: '', photo: null,
+}
 
 function validate(form) {
   const errors = {}
   if (!form.fullName.trim()) errors.fullName = 'Full name is required'
   if (!form.dob) errors.dob = 'Date of birth is required'
-  else {
-    const age = Math.floor((Date.now() - new Date(form.dob)) / 31557600000)
-    if (age < 15) errors.dob = 'Players must be 15 years or older'
-  }
+  else if (calcAge(form.dob) < 15) errors.dob = 'Players must be 15 years or older'
   if (!form.mobile.trim()) errors.mobile = 'Mobile number is required'
   else if (!/^[6-9]\d{9}$/.test(form.mobile.trim())) errors.mobile = 'Enter a valid 10-digit Indian mobile number'
   if (!form.email.trim()) errors.email = 'Email address is required'
@@ -46,21 +63,36 @@ function validate(form) {
   return errors
 }
 
+/* ─── Main Component ─────────────────────────────────────────── */
 export default function Register() {
-  const [form, setForm] = useState(initialForm)
-  const [errors, setErrors] = useState(initialErrors)
+  // step: 'form' | 'payment' | 'confirm' | 'done'
+  const [step, setStep]               = useState('form')
+  const [form, setForm]               = useState(initialForm)
+  const [errors, setErrors]           = useState({})
   const [photoPreview, setPhotoPreview] = useState(null)
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]         = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const fileRef = useRef()
+  const fileRef                       = useRef()
 
+  // Payment step state
+  const [registrationId, setRegistrationId] = useState('')
+  const [copiedUpi, setCopiedUpi]           = useState(false)
+  const [upiClicked, setUpiClicked]         = useState(false)
+
+  // UTR step state
+  const [utr, setUtr]               = useState('')
+  const [utrError, setUtrError]     = useState('')
+  const [utrLoading, setUtrLoading] = useState(false)
+  const [utrSubmitErr, setUtrSubmitErr] = useState('')
+
+  // Done screen
+  const [finalData, setFinalData]   = useState(null)
+
+  /* ── Form handlers ── */
   function handleChange(e) {
     const { name, value } = e.target
     setForm(f => ({ ...f, [name]: value }))
-    if (errors[name]) {
-      setErrors(err => ({ ...err, [name]: '' }))
-    }
+    if (errors[name]) setErrors(err => ({ ...err, [name]: '' }))
   }
 
   function handlePhoto(e) {
@@ -81,58 +113,158 @@ export default function Register() {
     reader.readAsDataURL(file)
   }
 
+  /* ── Step 1: Submit Registration Form ── */
   async function handleSubmit(e) {
     e.preventDefault()
     const errs = validate(form)
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
-      // Scroll to first error
       const first = document.querySelector('.reg-field--error')
       if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
-    
+
     setLoading(true)
     setSubmitError('')
 
     try {
-      const age = Math.floor((Date.now() - new Date(form.dob)) / 31557600000)
+      const age = calcAge(form.dob)
+      const now = new Date().toISOString().split('T')[0]
 
       const body = new URLSearchParams()
-      body.append('fullName', form.fullName)
-      body.append('dateOfBirth', form.dob)
-      body.append('age', String(age))
-      body.append('mobileNumber', form.mobile)
-      body.append('email', form.email)
-      body.append('city', form.city)
-      body.append('playingRole', form.playingRole)
-      body.append('cricketExperience', form.experience)
-      body.append('emergencyContact', form.emergencyContact)
-      body.append('playerPhoto', photoPreview || '')
+      body.append('action',             'registration')
+      body.append('fullName',           form.fullName)
+      body.append('dateOfBirth',        form.dob)
+      body.append('age',                String(age))
+      body.append('mobileNumber',       form.mobile)
+      body.append('email',              form.email)
+      body.append('city',               form.city)
+      body.append('playingRole',        form.playingRole)
+      body.append('cricketExperience',  form.experience)
+      body.append('emergencyContact',   form.emergencyContact)
+      body.append('playerPhoto',        photoPreview || '')
+      body.append('registrationStatus', 'New')
+      body.append('paymentStatus',      'Payment Verification Pending')
+      body.append('paymentAmount',      '199')
+      body.append('paymentDate',        now)
 
-      await fetch('https://script.google.com/macros/s/AKfycbwFbDLI0DVLX-P-zhgr85XYtwWFbimKiLZFasMgDUwfsrYncs_M_goicb7Gdqevuw1C/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: body.toString()
-      })
+      // Use cors mode so we can read the server-generated UNIQUE ID back
+      let serverRegId = ''
+      try {
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body:    body.toString(),
+        })
+        const json = await res.json()
+        if (json && json.uniqueId) {
+          serverRegId = json.uniqueId          // e.g. NGPL-2026-0001
+        }
+      } catch {
+        // Network or CORS issue – fall through to localFallbackId
+      }
 
-      // Since mode is no-cors, the response is opaque. Treat resolution as success.
-      setSubmitted(true)
+      // Use server ID if obtained, otherwise fall back to local timestamp-based ID
+      const regId = serverRegId || localFallbackId()
+
+      setRegistrationId(regId)
+      setStep('payment')
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      setForm(initialForm)
-      setPhotoPreview(null)
-    } catch (err) {
+    } catch {
       setSubmitError('Unable to submit registration. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  if (submitted) {
-    return <SuccessScreen name={form.fullName} role={form.playingRole} />
+  /* ── Step 3: Submit UTR ── */
+  async function handleUtrSubmit(e) {
+    e.preventDefault()
+    const trimmedUtr = utr.trim()
+
+    if (!trimmedUtr) {
+      setUtrError('UTR / Transaction ID is required')
+      return
+    }
+    if (trimmedUtr.length < 6) {
+      setUtrError('Please enter a valid UTR / Transaction ID (minimum 6 characters)')
+      return
+    }
+
+    setUtrLoading(true)
+    setUtrSubmitErr('')
+    setUtrError('')
+
+    try {
+      const now = new Date().toISOString().split('T')[0]
+
+      const body = new URLSearchParams()
+      body.append('action',         'paymentUpdate')
+      body.append('registrationId', registrationId)
+      body.append('utrId',          trimmedUtr)
+      body.append('paymentStatus',  'Payment Verification Pending')
+      body.append('paymentAmount',  '199')
+      body.append('paymentDate',    now)
+
+      // cors mode – response is informational only, no blocking on failure
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body:    body.toString(),
+        })
+      } catch {
+        // Network hiccup – UTR is still shown to user; admin can reconcile manually
+      }
+
+      setFinalData({
+        registrationId,
+        name: form.fullName,
+        role: form.playingRole,
+        utr: trimmedUtr,
+      })
+      setStep('done')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch {
+      setUtrSubmitErr('Unable to submit payment details. Please try again.')
+    } finally {
+      setUtrLoading(false)
+    }
   }
 
+  /* ── UPI copy ── */
+  async function handleCopyUpi() {
+    try {
+      await navigator.clipboard.writeText(UPI_ID)
+      setCopiedUpi(true)
+      setTimeout(() => setCopiedUpi(false), 2500)
+    } catch {
+      // clipboard not available — user can copy manually
+    }
+  }
+
+  /* ── Render ── */
+  if (step === 'done')    return <DoneScreen data={finalData} />
+  if (step === 'payment') return (
+    <PaymentSection
+      registrationId={registrationId}
+      onNext={() => { setStep('confirm'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+    />
+  )
+  if (step === 'confirm') return (
+    <UtrSection
+      utr={utr}
+      setUtr={setUtr}
+      utrError={utrError}
+      setUtrError={setUtrError}
+      utrLoading={utrLoading}
+      utrSubmitErr={utrSubmitErr}
+      registrationId={registrationId}
+      handleUtrSubmit={handleUtrSubmit}
+    />
+  )
+
+  /* ── Registration Form ── */
   return (
     <div className="register-page">
 
@@ -179,7 +311,7 @@ export default function Register() {
                 </div>
                 <div className="register-sidebar__point">
                   <CheckCircle size={15} className="reg-point-icon reg-point-icon--gold" />
-                  <span>Accommodation & meals provided</span>
+                  <span>Accommodation &amp; meals provided</span>
                 </div>
                 <div className="register-sidebar__point">
                   <CheckCircle size={15} className="reg-point-icon reg-point-icon--gold" />
@@ -187,7 +319,7 @@ export default function Register() {
                 </div>
                 <div className="register-sidebar__point">
                   <CheckCircle size={15} className="reg-point-icon reg-point-icon--gold" />
-                  <span>Professional umpires & commentary</span>
+                  <span>Professional umpires &amp; commentary</span>
                 </div>
               </div>
               <div className="register-sidebar__divider" />
@@ -219,14 +351,9 @@ export default function Register() {
                   <User size={14} /> Full Name <span className="reg-required">*</span>
                 </label>
                 <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  className="reg-input"
-                  placeholder="Enter your full name"
-                  value={form.fullName}
-                  onChange={handleChange}
-                  autoComplete="name"
+                  id="fullName" name="fullName" type="text" className="reg-input"
+                  placeholder="Enter your full name" value={form.fullName}
+                  onChange={handleChange} autoComplete="name"
                 />
                 {errors.fullName && <div className="reg-error"><AlertCircle size={12} />{errors.fullName}</div>}
               </div>
@@ -237,12 +364,8 @@ export default function Register() {
                   <Calendar size={14} /> Date of Birth <span className="reg-required">*</span>
                 </label>
                 <input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  className="reg-input"
-                  value={form.dob}
-                  onChange={handleChange}
+                  id="dob" name="dob" type="date" className="reg-input"
+                  value={form.dob} onChange={handleChange}
                   max={new Date(Date.now() - 15 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
                 />
                 {errors.dob && <div className="reg-error"><AlertCircle size={12} />{errors.dob}</div>}
@@ -257,15 +380,11 @@ export default function Register() {
                 <div className="reg-input-prefix">
                   <span className="reg-prefix">+91</span>
                   <input
-                    id="mobile"
-                    name="mobile"
-                    type="tel"
+                    id="mobile" name="mobile" type="tel"
                     className="reg-input reg-input--prefixed"
                     placeholder="10-digit mobile number"
-                    value={form.mobile}
-                    onChange={handleChange}
-                    maxLength={10}
-                    autoComplete="tel"
+                    value={form.mobile} onChange={handleChange}
+                    maxLength={10} autoComplete="tel"
                   />
                 </div>
                 {errors.mobile && <div className="reg-error"><AlertCircle size={12} />{errors.mobile}</div>}
@@ -277,14 +396,9 @@ export default function Register() {
                   <Mail size={14} /> Email Address <span className="reg-required">*</span>
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  className="reg-input"
-                  placeholder="your@email.com"
-                  value={form.email}
-                  onChange={handleChange}
-                  autoComplete="email"
+                  id="email" name="email" type="email" className="reg-input"
+                  placeholder="your@email.com" value={form.email}
+                  onChange={handleChange} autoComplete="email"
                 />
                 {errors.email && <div className="reg-error"><AlertCircle size={12} />{errors.email}</div>}
               </div>
@@ -295,14 +409,9 @@ export default function Register() {
                   <MapPin size={14} /> City <span className="reg-required">*</span>
                 </label>
                 <input
-                  id="city"
-                  name="city"
-                  type="text"
-                  className="reg-input"
-                  placeholder="Your city"
-                  value={form.city}
-                  onChange={handleChange}
-                  autoComplete="address-level2"
+                  id="city" name="city" type="text" className="reg-input"
+                  placeholder="Your city" value={form.city}
+                  onChange={handleChange} autoComplete="address-level2"
                 />
                 {errors.city && <div className="reg-error"><AlertCircle size={12} />{errors.city}</div>}
               </div>
@@ -315,16 +424,12 @@ export default function Register() {
                   <Activity size={14} /> Playing Role <span className="reg-required">*</span>
                 </label>
                 <select
-                  id="playingRole"
-                  name="playingRole"
+                  id="playingRole" name="playingRole"
                   className="reg-input reg-select"
-                  value={form.playingRole}
-                  onChange={handleChange}
+                  value={form.playingRole} onChange={handleChange}
                 >
                   <option value="">Select your playing role</option>
-                  {PLAYING_ROLES.map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
+                  {PLAYING_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
                 {errors.playingRole && <div className="reg-error"><AlertCircle size={12} />{errors.playingRole}</div>}
               </div>
@@ -335,21 +440,17 @@ export default function Register() {
                   <Clock size={14} /> Cricket Experience <span className="reg-required">*</span>
                 </label>
                 <select
-                  id="experience"
-                  name="experience"
+                  id="experience" name="experience"
                   className="reg-input reg-select"
-                  value={form.experience}
-                  onChange={handleChange}
+                  value={form.experience} onChange={handleChange}
                 >
                   <option value="">Select experience level</option>
-                  {EXPERIENCE_LEVELS.map(lvl => (
-                    <option key={lvl} value={lvl}>{lvl}</option>
-                  ))}
+                  {EXPERIENCE_LEVELS.map(lvl => <option key={lvl} value={lvl}>{lvl}</option>)}
                 </select>
                 {errors.experience && <div className="reg-error"><AlertCircle size={12} />{errors.experience}</div>}
               </div>
 
-              <div className="reg-section-title" style={{ marginTop: '2rem' }}>Emergency & Photo</div>
+              <div className="reg-section-title" style={{ marginTop: '2rem' }}>Emergency &amp; Photo</div>
 
               {/* Emergency Contact */}
               <div className={`reg-field ${errors.emergencyContact ? 'reg-field--error' : ''}`}>
@@ -359,13 +460,10 @@ export default function Register() {
                 <div className="reg-input-prefix">
                   <span className="reg-prefix">+91</span>
                   <input
-                    id="emergencyContact"
-                    name="emergencyContact"
-                    type="tel"
+                    id="emergencyContact" name="emergencyContact" type="tel"
                     className="reg-input reg-input--prefixed"
                     placeholder="Parent / Guardian mobile number"
-                    value={form.emergencyContact}
-                    onChange={handleChange}
+                    value={form.emergencyContact} onChange={handleChange}
                     maxLength={10}
                   />
                 </div>
@@ -380,8 +478,7 @@ export default function Register() {
                 <div
                   className={`reg-upload ${photoPreview ? 'reg-upload--has-photo' : ''}`}
                   onClick={() => fileRef.current?.click()}
-                  role="button"
-                  tabIndex={0}
+                  role="button" tabIndex={0}
                   onKeyDown={e => e.key === 'Enter' && fileRef.current?.click()}
                   aria-label="Upload player photo"
                 >
@@ -396,19 +493,12 @@ export default function Register() {
                   )}
                 </div>
                 <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  onChange={handlePhoto}
+                  ref={fileRef} type="file" accept="image/*"
+                  style={{ display: 'none' }} onChange={handlePhoto}
                   aria-label="Upload player photo"
                 />
                 {photoPreview && (
-                  <button
-                    type="button"
-                    className="reg-upload__change"
-                    onClick={() => fileRef.current?.click()}
-                  >
+                  <button type="button" className="reg-upload__change" onClick={() => fileRef.current?.click()}>
                     Change Photo
                   </button>
                 )}
@@ -416,12 +506,11 @@ export default function Register() {
               </div>
 
               {submitError && (
-                <div className="reg-global-error" style={{ color: '#ff4d4d', background: 'rgba(255,77,77,0.1)', padding: '1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', border: '1px solid rgba(255,77,77,0.2)' }}>
+                <div className="reg-global-error">
                   <AlertCircle size={18} /> {submitError}
                 </div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 className="btn btn-primary btn-lg reg-submit"
@@ -429,20 +518,15 @@ export default function Register() {
                 id="register-submit-btn"
               >
                 {loading ? (
-                  <>
-                    <Loader size={18} className="reg-spinner" />
-                    SUBMITTING REGISTRATION...
-                  </>
+                  <><Loader size={18} className="reg-spinner" /> SUBMITTING REGISTRATION...</>
                 ) : (
-                  <>
-                    REGISTER NOW — ₹199
-                    <ArrowRight size={18} />
-                  </>
+                  <>REGISTER NOW — ₹199 <ArrowRight size={18} /></>
                 )}
               </button>
 
               <p className="reg-disclaimer">
-                By registering, you confirm that all provided information is accurate. Registration fee of ₹199 is to be paid as per NGPL payment instructions. Grade-specific fees apply after trial selection.
+                By registering, you confirm that all provided information is accurate. Registration fee of ₹199
+                is to be paid as per NGPL payment instructions. Grade-specific fees apply after trial selection.
               </p>
             </form>
           </div>
@@ -453,7 +537,170 @@ export default function Register() {
   )
 }
 
-function SuccessScreen({ name, role }) {
+/* ─── Payment Section ────────────────────────────────────────── */
+function PaymentSection({ registrationId, onNext }) {
+  return (
+    <div className="pay-page">
+      <div className="pay-page__bg">
+        <div className="pay-page__orb pay-page__orb--gold" />
+        <div className="pay-page__orb pay-page__orb--blue" />
+        <div className="pay-page__grid" />
+      </div>
+
+      <div className="pay-page__inner section">
+        {/* Step indicator */}
+        <div className="pay-steps">
+          <div className="pay-step pay-step--done">
+            <span className="pay-step__num">✓</span><span>Registration</span>
+          </div>
+          <div className="pay-step__line" />
+          <div className="pay-step pay-step--active">
+            <span className="pay-step__num">2</span><span>Payment</span>
+          </div>
+          <div className="pay-step__line" />
+          <div className="pay-step">
+            <span className="pay-step__num">3</span><span>Confirm</span>
+          </div>
+        </div>
+
+        {/* QR Card */}
+        <div className="qr-only-card">
+          <div className="qr-only-box" id="upi-qr-code">
+            <QRCodeSVG
+              value={UPI_LINK}
+              size={260}
+              bgColor="#FFFFFF"
+              fgColor="#000000"
+              level="H"
+              includeMargin={true}
+            />
+          </div>
+
+          <div className="qr-only-upi-id">{UPI_ID}</div>
+        </div>
+
+        {/* Continue */}
+        <button
+          type="button"
+          className="btn btn-primary btn-lg pay-continue-btn"
+          onClick={onNext}
+          id="continue-to-confirm-btn"
+        >
+          I HAVE PAID — CONTINUE <ArrowRight size={18} />
+        </button>
+
+        <div className="pay-reg-id-note">
+          Registration ID: <strong>{registrationId}</strong>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+/* ─── UTR Confirmation Section ───────────────────────────────── */
+function UtrSection({ utr, setUtr, utrError, setUtrError, utrLoading, utrSubmitErr, registrationId, handleUtrSubmit }) {
+  return (
+    <div className="pay-page">
+      <div className="pay-page__bg">
+        <div className="pay-page__orb pay-page__orb--gold" />
+        <div className="pay-page__orb pay-page__orb--blue" />
+        <div className="pay-page__grid" />
+      </div>
+
+      <div className="pay-page__inner section">
+        {/* Step indicator */}
+        <div className="pay-steps">
+          <div className="pay-step pay-step--done">
+            <span className="pay-step__num">✓</span><span>Registration</span>
+          </div>
+          <div className="pay-step__line" />
+          <div className="pay-step pay-step--done">
+            <span className="pay-step__num">✓</span><span>Payment</span>
+          </div>
+          <div className="pay-step__line" />
+          <div className="pay-step pay-step--active">
+            <span className="pay-step__num">3</span><span>Confirm</span>
+          </div>
+        </div>
+
+        <div className="pay-card">
+          <div className="pay-card__header">
+            <div className="pay-card__icon pay-card__icon--blue"><ClipboardCheck size={28} /></div>
+            <div className="pay-card__header-text">
+              <div className="pay-card__label">PAYMENT CONFIRMATION</div>
+              <div className="pay-card__sub">Enter your transaction details below</div>
+            </div>
+          </div>
+
+          <div className="pay-card__divider" />
+
+          <form onSubmit={handleUtrSubmit} noValidate>
+            <div className={`reg-field ${utrError ? 'reg-field--error' : ''}`}>
+              <label className="reg-label" htmlFor="utr-input">
+                <ShieldCheck size={14} /> UTR / Transaction ID <span className="reg-required">*</span>
+              </label>
+              <input
+                id="utr-input"
+                type="text"
+                className="reg-input utr-input"
+                placeholder="e.g. 426813205689 or T2609XXXX"
+                value={utr}
+                onChange={e => {
+                  setUtr(e.target.value)
+                  if (utrError) setUtrError('')
+                }}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {utrError && <div className="reg-error"><AlertCircle size={12} />{utrError}</div>}
+              <div className="reg-hint">
+                Find your UTR in the UPI app under transaction history after payment.
+              </div>
+            </div>
+
+            {utrSubmitErr && (
+              <div className="reg-global-error" style={{ marginTop: '1rem' }}>
+                <AlertCircle size={18} /> {utrSubmitErr}
+              </div>
+            )}
+
+            <div className="utr-info-box">
+              <div className="utr-info-row">
+                <span className="utr-info-label">Registration ID</span>
+                <span className="utr-info-value">{registrationId}</span>
+              </div>
+              <div className="utr-info-row">
+                <span className="utr-info-label">Amount Paid</span>
+                <span className="utr-info-value utr-info-value--gold">₹199</span>
+              </div>
+              <div className="utr-info-row">
+                <span className="utr-info-label">UPI ID</span>
+                <span className="utr-info-value">{UPI_ID}</span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-lg reg-submit"
+              disabled={utrLoading}
+              id="confirm-payment-btn"
+            >
+              {utrLoading ? (
+                <><Loader size={18} className="reg-spinner" /> SUBMITTING PAYMENT DETAILS...</>
+              ) : (
+                <><ShieldCheck size={18} /> CONFIRM PAYMENT</>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Done Screen ────────────────────────────────────────────── */
+function DoneScreen({ data }) {
   return (
     <div className="success-screen">
       <div className="success-screen__bg">
@@ -465,16 +712,37 @@ function SuccessScreen({ name, role }) {
         <div className="success-icon">
           <CheckCircle size={48} />
         </div>
-        <div className="success-badge">REGISTRATION SUCCESSFUL</div>
+        <div className="success-badge">REGISTRATION SUBMITTED</div>
         <h1 className="success-title">
           Welcome to <span className="gold-text">NGPL!</span>
         </h1>
         <p className="success-name">
-          🏏 {name} — <span>{role}</span>
+          🏏 {data.name} — <span>{data.role}</span>
         </p>
+
+        {/* Registration ID card */}
+        <div className="done-id-card">
+          <div className="done-id-row">
+            <span className="done-id-label">Registration ID</span>
+            <span className="done-id-value">{data.registrationId}</span>
+          </div>
+          <div className="done-id-divider" />
+          <div className="done-id-row">
+            <span className="done-id-label">Payment Status</span>
+            <span className="done-id-status">⏳ Payment Verification Pending</span>
+          </div>
+          <div className="done-id-divider" />
+          <div className="done-id-row">
+            <span className="done-id-label">UTR / Transaction ID</span>
+            <span className="done-id-value done-id-value--mono">{data.utr}</span>
+          </div>
+        </div>
+
         <p className="success-desc">
-          Your NGPL registration has been submitted successfully. Our team will review your application and contact you with further details about the trial schedule at <strong>Tau Devi Lal Stadium, Gurgaon</strong>.
+          Your payment will be verified by the NGPL team within 24–48 hours.
+          You will be contacted on your registered mobile number and email once verified.
         </p>
+
         <div className="success-steps">
           <div className="success-step">
             <div className="success-step__num">1</div>
@@ -483,7 +751,7 @@ function SuccessScreen({ name, role }) {
           <div className="success-step-arrow">→</div>
           <div className="success-step">
             <div className="success-step__num">2</div>
-            <div className="success-step__text">Trial Notification (Coming Soon)</div>
+            <div className="success-step__text">Payment Verification ⏳</div>
           </div>
           <div className="success-step-arrow">→</div>
           <div className="success-step">
