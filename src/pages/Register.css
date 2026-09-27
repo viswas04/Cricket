@@ -1364,3 +1364,109 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .qr-only-box svg { width: 240px !important; height: 240px !important; }
   .qr-only-upi-id { font-size: 1rem; }
 }
+
+/* ============================================================
+   PAYMENT MODAL (Premium Centered)
+   ============================================================ */
+.payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 9, 18, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.payment-modal {
+  background: linear-gradient(145deg, rgba(16, 23, 38, 0.95), rgba(10, 15, 26, 0.98));
+  border: 1px solid rgba(245, 197, 24, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  box-shadow: 
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(245, 197, 24, 0.1),
+    0 0 80px rgba(245, 197, 24, 0.15);
+  animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.payment-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.payment-modal-close:hover {
+  background: rgba(229, 57, 53, 0.15);
+  border-color: rgba(229, 57, 53, 0.3);
+  color: #EF5350;
+  transform: rotate(90deg);
+}
+
+.payment-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin: 0;
+  line-height: 1;
+}
+
+.payment-modal-qr-wrap {
+  background: #fff;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 
+    0 0 0 2px rgba(245, 197, 24, 0.4),
+    0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.payment-modal-upi {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #F5C518;
+  letter-spacing: 0.05em;
+  text-align: center;
+  word-break: break-all;
+}
+
+.payment-modal-amt {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .payment-modal { padding: 2.5rem 1.5rem; }
+  .payment-modal-qr-wrap svg { width: 200px !important; height: 200px !important; }
+}

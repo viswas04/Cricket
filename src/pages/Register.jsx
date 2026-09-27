@@ -1,8 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   CheckCircle, Upload, ArrowRight, AlertCircle, User, Phone, Mail,
   MapPin, Calendar, Activity, Clock, Camera, Loader, Copy, CreditCard,
-  Smartphone, ShieldCheck, ClipboardCheck, QrCode
+  Smartphone, ShieldCheck, ClipboardCheck, QrCode, X
 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import './Register.css'
@@ -42,7 +42,7 @@ function calcAge(dob) {
 /* ─── Validation ────────────────────────────────────────────── */
 const initialForm = {
   fullName: '', dob: '', mobile: '', email: '',
-  city: '', playingRole: '', experience: '', emergencyContact: '', photo: null,
+  city: '', playingRole: '', experience: '', emergencyContact: '',
 }
 
 function validate(form) {
@@ -59,22 +59,20 @@ function validate(form) {
   if (!form.experience) errors.experience = 'Please select your experience level'
   if (!form.emergencyContact.trim()) errors.emergencyContact = 'Emergency contact number is required'
   else if (!/^[6-9]\d{9}$/.test(form.emergencyContact.trim())) errors.emergencyContact = 'Enter a valid 10-digit mobile number'
-  if (!form.photo) errors.photo = 'Please upload your player photo'
   return errors
 }
 
 /* ─── Main Component ─────────────────────────────────────────── */
 export default function Register() {
-  // step: 'form' | 'payment' | 'confirm' | 'done'
+  // step: 'form' | 'confirm' | 'done'
   const [step, setStep]               = useState('form')
   const [form, setForm]               = useState(initialForm)
   const [errors, setErrors]           = useState({})
-  const [photoPreview, setPhotoPreview] = useState(null)
   const [loading, setLoading]         = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const fileRef                       = useRef()
 
-  // Payment step state
+  // Payment modal state
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [registrationId, setRegistrationId] = useState('')
   const [copiedUpi, setCopiedUpi]           = useState(false)
   const [upiClicked, setUpiClicked]         = useState(false)
@@ -93,24 +91,6 @@ export default function Register() {
     const { name, value } = e.target
     setForm(f => ({ ...f, [name]: value }))
     if (errors[name]) setErrors(err => ({ ...err, [name]: '' }))
-  }
-
-  function handlePhoto(e) {
-    const file = e.target.files[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setErrors(err => ({ ...err, photo: 'Please upload a valid image file (JPG, PNG, etc.)' }))
-      return
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(err => ({ ...err, photo: 'Photo must be under 5MB' }))
-      return
-    }
-    setForm(f => ({ ...f, photo: file }))
-    setErrors(err => ({ ...err, photo: '' }))
-    const reader = new FileReader()
-    reader.onload = ev => setPhotoPreview(ev.target.result)
-    reader.readAsDataURL(file)
   }
 
   /* ── Step 1: Submit Registration Form ── */
@@ -142,7 +122,6 @@ export default function Register() {
       body.append('playingRole',        form.playingRole)
       body.append('cricketExperience',  form.experience)
       body.append('emergencyContact',   form.emergencyContact)
-      body.append('playerPhoto',        photoPreview || '')
       body.append('registrationStatus', 'New')
       body.append('paymentStatus',      'Payment Verification Pending')
       body.append('paymentAmount',      '199')
@@ -168,7 +147,15 @@ export default function Register() {
       const regId = serverRegId || localFallbackId()
 
       setRegistrationId(regId)
-      setStep('payment')
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      if (isMobile) {
+        // Attempt to open PhonePe app using UPI intent
+        window.location.href = UPI_LINK
+      }
+      
+      setStep('confirm')
+      setShowPaymentModal(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
       setSubmitError('Unable to submit registration. Please try again.')
@@ -245,23 +232,23 @@ export default function Register() {
 
   /* ── Render ── */
   if (step === 'done')    return <DoneScreen data={finalData} />
-  if (step === 'payment') return (
-    <PaymentSection
-      registrationId={registrationId}
-      onNext={() => { setStep('confirm'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-    />
-  )
   if (step === 'confirm') return (
-    <UtrSection
-      utr={utr}
-      setUtr={setUtr}
-      utrError={utrError}
-      setUtrError={setUtrError}
-      utrLoading={utrLoading}
-      utrSubmitErr={utrSubmitErr}
-      registrationId={registrationId}
-      handleUtrSubmit={handleUtrSubmit}
-    />
+    <>
+      <UtrSection
+        utr={utr}
+        setUtr={setUtr}
+        utrError={utrError}
+        setUtrError={setUtrError}
+        utrLoading={utrLoading}
+        utrSubmitErr={utrSubmitErr}
+        registrationId={registrationId}
+        handleUtrSubmit={handleUtrSubmit}
+        onShowQr={() => setShowPaymentModal(true)}
+      />
+      {showPaymentModal && (
+        <PaymentModal onClose={() => setShowPaymentModal(false)} />
+      )}
+    </>
   )
 
   /* ── Registration Form ── */
@@ -450,7 +437,7 @@ export default function Register() {
                 {errors.experience && <div className="reg-error"><AlertCircle size={12} />{errors.experience}</div>}
               </div>
 
-              <div className="reg-section-title" style={{ marginTop: '2rem' }}>Emergency &amp; Photo</div>
+              <div className="reg-section-title" style={{ marginTop: '2rem' }}>Emergency Contact</div>
 
               {/* Emergency Contact */}
               <div className={`reg-field ${errors.emergencyContact ? 'reg-field--error' : ''}`}>
@@ -468,41 +455,6 @@ export default function Register() {
                   />
                 </div>
                 {errors.emergencyContact && <div className="reg-error"><AlertCircle size={12} />{errors.emergencyContact}</div>}
-              </div>
-
-              {/* Photo Upload */}
-              <div className={`reg-field ${errors.photo ? 'reg-field--error' : ''}`}>
-                <label className="reg-label">
-                  <Camera size={14} /> Player Photo <span className="reg-required">*</span>
-                </label>
-                <div
-                  className={`reg-upload ${photoPreview ? 'reg-upload--has-photo' : ''}`}
-                  onClick={() => fileRef.current?.click()}
-                  role="button" tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && fileRef.current?.click()}
-                  aria-label="Upload player photo"
-                >
-                  {photoPreview ? (
-                    <img src={photoPreview} alt="Player preview" className="reg-upload__preview" />
-                  ) : (
-                    <div className="reg-upload__inner">
-                      <Upload size={28} className="reg-upload__icon" />
-                      <span className="reg-upload__main">Click to upload your photo</span>
-                      <span className="reg-upload__sub">JPG, PNG, WEBP up to 5MB</span>
-                    </div>
-                  )}
-                </div>
-                <input
-                  ref={fileRef} type="file" accept="image/*"
-                  style={{ display: 'none' }} onChange={handlePhoto}
-                  aria-label="Upload player photo"
-                />
-                {photoPreview && (
-                  <button type="button" className="reg-upload__change" onClick={() => fileRef.current?.click()}>
-                    Change Photo
-                  </button>
-                )}
-                {errors.photo && <div className="reg-error"><AlertCircle size={12} />{errors.photo}</div>}
               </div>
 
               {submitError && (
@@ -537,61 +489,32 @@ export default function Register() {
   )
 }
 
-/* ─── Payment Section ────────────────────────────────────────── */
-function PaymentSection({ registrationId, onNext }) {
+/* ─── Payment Modal ────────────────────────────────────────── */
+function PaymentModal({ onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   return (
-    <div className="pay-page">
-      <div className="pay-page__bg">
-        <div className="pay-page__orb pay-page__orb--gold" />
-        <div className="pay-page__orb pay-page__orb--blue" />
-        <div className="pay-page__grid" />
-      </div>
-
-      <div className="pay-page__inner section">
-        {/* Step indicator */}
-        <div className="pay-steps">
-          <div className="pay-step pay-step--done">
-            <span className="pay-step__num">✓</span><span>Registration</span>
-          </div>
-          <div className="pay-step__line" />
-          <div className="pay-step pay-step--active">
-            <span className="pay-step__num">2</span><span>Payment</span>
-          </div>
-          <div className="pay-step__line" />
-          <div className="pay-step">
-            <span className="pay-step__num">3</span><span>Confirm</span>
-          </div>
-        </div>
-
-        {/* QR Card */}
-        <div className="qr-only-card">
-          <div className="qr-only-box" id="upi-qr-code">
-            <QRCodeSVG
-              value={UPI_LINK}
-              size={260}
-              bgColor="#FFFFFF"
-              fgColor="#000000"
-              level="H"
-              includeMargin={true}
-            />
-          </div>
-
-          <div className="qr-only-upi-id">{UPI_ID}</div>
-        </div>
-
-        {/* Continue */}
-        <button
-          type="button"
-          className="btn btn-primary btn-lg pay-continue-btn"
-          onClick={onNext}
-          id="continue-to-confirm-btn"
-        >
-          I HAVE PAID — CONTINUE <ArrowRight size={18} />
+    <div className="payment-modal-overlay" onClick={onClose}>
+      <div className="payment-modal" onClick={e => e.stopPropagation()}>
+        <button className="payment-modal-close" onClick={onClose} aria-label="Close">
+          <X size={24} />
         </button>
-
-        <div className="pay-reg-id-note">
-          Registration ID: <strong>{registrationId}</strong>
+        <h3 className="payment-modal-title">SCAN & PAY</h3>
+        <div className="payment-modal-qr-wrap">
+          <QRCodeSVG
+            value={UPI_LINK}
+            size={220}
+            bgColor="#FFFFFF"
+            fgColor="#000000"
+            level="H"
+            includeMargin={true}
+          />
         </div>
+        <div className="payment-modal-upi">{UPI_ID}</div>
+        <div className="payment-modal-amt">₹{UPI_AMT}</div>
       </div>
     </div>
   )
@@ -599,7 +522,7 @@ function PaymentSection({ registrationId, onNext }) {
 
 
 /* ─── UTR Confirmation Section ───────────────────────────────── */
-function UtrSection({ utr, setUtr, utrError, setUtrError, utrLoading, utrSubmitErr, registrationId, handleUtrSubmit }) {
+function UtrSection({ utr, setUtr, utrError, setUtrError, utrLoading, utrSubmitErr, registrationId, handleUtrSubmit, onShowQr }) {
   return (
     <div className="pay-page">
       <div className="pay-page__bg">
@@ -631,6 +554,9 @@ function UtrSection({ utr, setUtr, utrError, setUtrError, utrLoading, utrSubmitE
               <div className="pay-card__label">PAYMENT CONFIRMATION</div>
               <div className="pay-card__sub">Enter your transaction details below</div>
             </div>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={onShowQr} style={{ marginLeft: 'auto' }}>
+              <QrCode size={14} /> Show QR
+            </button>
           </div>
 
           <div className="pay-card__divider" />
