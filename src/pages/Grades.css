@@ -51,22 +51,22 @@
 }
 
 .grade-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
 }
 
 .grade-card--gold:hover {
   border-color: rgba(245,197,24,0.5);
-  box-shadow: 0 0 80px rgba(245,197,24,0.15), 0 24px 48px rgba(0,0,0,0.4);
+  box-shadow: 0 0 40px rgba(245,197,24,0.12), 0 16px 40px rgba(0,0,0,0.35);
 }
 
 .grade-card--blue:hover {
   border-color: rgba(0,180,255,0.4);
-  box-shadow: 0 0 60px rgba(0,180,255,0.12), 0 24px 48px rgba(0,0,0,0.4);
+  box-shadow: 0 0 30px rgba(0,180,255,0.1), 0 16px 40px rgba(0,0,0,0.35);
 }
 
 .grade-card--silver:hover {
   border-color: rgba(160,180,200,0.25);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
 }
 
 .grade-card:hover::after { opacity: 1; }

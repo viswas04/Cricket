@@ -606,6 +606,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .register-sidebar {
     position: static;
     flex-direction: row;
+    gap: 1rem;
   }
   .register-sidebar__card,
   .register-sidebar__prize-peek {
@@ -613,11 +614,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
+@media (max-width: 768px) {
+  .register-layout { gap: 1.5rem; }
+  .register-sidebar { flex-direction: column; }
+  .register-form-wrap { padding: 2rem 1.5rem; }
+  .pay-page { padding: 2rem 0 4rem; }
+  .pay-card { padding: 2rem 1.5rem; }
+  .qr-only-card { padding: 2rem 1.25rem; }
+}
+
 @media (max-width: 640px) {
   .register-sidebar { flex-direction: column; }
   .register-form-wrap { padding: 1.5rem 1.25rem; }
-  .success-steps { flex-direction: column; }
+  .success-steps { flex-direction: column; gap: 0.75rem; }
   .success-step-arrow { transform: rotate(90deg); }
+  .done-id-card { padding: 1.25rem; }
+  .reg-submit { min-height: 52px; }
 }
 
 /* ============================================================

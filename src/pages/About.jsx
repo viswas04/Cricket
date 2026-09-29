@@ -130,7 +130,7 @@ export default function About() {
           <div className="selection-grid">
             {[
               { num: '01', title: 'Register',  desc: 'Players register for NGPL by paying the ₹199 registration fee and filling out the registration form with their details and playing role.' },
-              { num: '02', title: 'Trials',    desc: 'Players participate in organized trials at Tau Devi Lal Stadium, Gurgaon. Performance across batting, bowling, and fielding is evaluated.' },
+              { num: '02', title: 'Trials',    desc: 'Players participate in organized trials at participating locations across India. Performance across batting, bowling, and fielding is evaluated.' },
               { num: '03', title: 'Grading',   desc: 'Based on trial performance, players are assigned to Grade A, B, or C. Each grade has its own fee structure reflecting player tier.' },
               { num: '04', title: 'Tournament',desc: 'Graded players compete in the NGPL tournament with full facilities — accommodation, jerseys, food, official umpires, and live streaming.' },
             ].map((step, i) => (

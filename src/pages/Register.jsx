@@ -313,8 +313,8 @@ export default function Register() {
               <div className="register-sidebar__venue">
                 <MapPin size={14} className="register-sidebar__venue-icon" />
                 <div>
-                  <div className="register-sidebar__venue-name">Tau Devi Lal Stadium</div>
-                  <div className="register-sidebar__venue-loc">Gurgaon, Haryana</div>
+                  <div className="register-sidebar__venue-name">Available Across India</div>
+                  <div className="register-sidebar__venue-loc">Multiple Cities</div>
                 </div>
               </div>
             </div>

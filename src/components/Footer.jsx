@@ -80,8 +80,8 @@ export default function Footer() {
               <span className="footer__info-value gold">₹61,000</span>
             </li>
             <li className="footer__info-item">
-              <span className="footer__info-label">Venue</span>
-              <span className="footer__info-value">Tau Devi Lal Stadium, Gurgaon</span>
+              <span className="footer__info-label">Locations</span>
+              <span className="footer__info-value">Available Across India</span>
             </li>
           </ul>
         </div>
@@ -92,7 +92,7 @@ export default function Footer() {
           <ul className="footer__contact-list">
             <li className="footer__contact-item">
               <MapPin size={16} />
-              <span>Tau Devi Lal Stadium, Gurgaon, Haryana</span>
+              <span>Participating locations across India</span>
             </li>
             <li className="footer__contact-item">
               <Mail size={16} />

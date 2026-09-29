@@ -68,7 +68,7 @@ function useCountUp(ref, target, duration = 1600) {
 const highlights = [
   { icon: <Trophy size={26} />, label: 'Prize Pool', value: '₹1,00,400+', desc: 'Total prize money', color: 'gold' },
   { icon: <Users size={26} />,  label: 'Eligibility', value: '15+ Years',  desc: 'Players above 15 eligible', color: 'blue' },
-  { icon: <MapPin size={26} />, label: 'Venue', value: 'Tau Devi Lal', desc: 'Gurgaon, Haryana', color: 'green' },
+  { icon: <MapPin size={26} />, label: 'Locations', value: 'Across India', desc: 'Multiple Cities', color: 'green' },
   { icon: <Star size={26} />,   label: 'Registration', value: '₹199',   desc: 'Affordable entry fee', color: 'red' },
 ]
 
@@ -276,8 +276,8 @@ export default function Home() {
             </div>
             <div className="hero__sep" />
             <div className="hero__info-item">
-              <span className="hero__info-label">Venue</span>
-              <span className="hero__info-value hero__info-value--sm">Tau Devi Lal Stadium, Gurgaon</span>
+              <span className="hero__info-label">Locations</span>
+              <span className="hero__info-value hero__info-value--sm">Available Across India</span>
             </div>
           </div>
 
@@ -592,60 +592,33 @@ export default function Home() {
       {/* ===================== VENUE ===================== */}
       <section className="home-section home-venue">
         <div className="section">
-          <div className="section-label reveal">Tournament Venue</div>
+          <div className="section-label reveal">Tournament Locations</div>
           <h2 className="section-title reveal reveal-delay-1">
-            The <span className="gold-text">Arena</span>
+            PLAYERS FROM <span className="gold-text">ACROSS INDIA</span>
           </h2>
 
-          <div className="venue-card-home reveal reveal-delay-2">
-            {/* Left */}
-            <div>
-              <div className="venue-badge">
-                <MapPin size={13} /> Official Venue
+          <div className="locations-grid reveal reveal-delay-2" style={{ marginTop: '3rem' }}>
+            {[
+              'Visakhapatnam (Vizag)',
+              'Hyderabad',
+              'Bangalore',
+              'Bhopal',
+              'Nagpur',
+              'Haryana',
+              'Delhi',
+              'Pune'
+            ].map((loc, i) => (
+              <div key={i} className="location-card">
+                <MapPin size={24} className="location-card__icon" />
+                <h3 className="location-card__name">{loc}</h3>
               </div>
-              <h3 className="venue-name-home">Tau Devi Lal<br />Stadium</h3>
-              <div className="venue-location-home">
-                <MapPin size={15} className="venue-location-icon" />
-                <span>Gurgaon, Haryana, India</span>
-              </div>
-              <p className="venue-desc-home">
-                Tau Devi Lal Stadium is a professional sports complex in Gurgaon, Haryana — offering professional-grade cricket facilities, well-maintained pitches, and spectator areas that create an electric atmosphere.
-              </p>
-              <div className="venue-features-home">
-                {[
-                  { emoji: '🏟️', label: 'Professional Cricket Ground' },
-                  { emoji: '💡', label: 'Floodlit Infrastructure' },
-                  { emoji: '🅿️', label: 'Ample Parking' },
-                  { emoji: '🚌', label: 'Accessible by Public Transport' },
-                ].map((feat, i) => (
-                  <div key={i} className="venue-feat">
-                    <span className="venue-feat__icon">{feat.emoji}</span>
-                    <span>{feat.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Map placeholder */}
-            <div className="venue-map-placeholder-home">
-              <div className="venue-map-placeholder-home__grid" />
-              <div className="venue-map-placeholder-home__inner">
-                <div className="venue-map-pin-home">
-                  <MapPin size={28} />
-                </div>
-                <div className="venue-map-name">Tau Devi Lal Stadium</div>
-                <div className="venue-map-loc">Gurgaon, Haryana</div>
-                <a
-                  href="https://www.google.com/maps/search/Tau+Devi+Lal+Stadium+Gurgaon"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary"
-                  style={{ marginTop: '0.75rem', padding: '0.6rem 1.25rem', fontSize: '0.78rem' }}
-                >
-                  View on Maps <ArrowRight size={13} />
-                </a>
-              </div>
-            </div>
+            ))}
+          </div>
+          
+          <div style={{ textAlign: 'center', marginTop: '2.5rem' }} className="reveal reveal-delay-3">
+            <Link to="/venue" className="btn btn-secondary">
+              View Location Details <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>
@@ -691,7 +664,7 @@ export default function Home() {
             <ArrowRight size={20} />
           </Link>
           <p className="home-cta__note reveal reveal-delay-4">
-            Tau Devi Lal Stadium, Gurgaon, Haryana • 15+ years eligible
+            Available Across India • 15+ years eligible
           </p>
         </div>
       </section>
