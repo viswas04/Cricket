@@ -32,12 +32,12 @@ export default function Venue() {
           <div className="page-header__grid" />
         </div>
         <div className="page-header__content section">
-          <div className="section-label">Tournament Locations</div>
+          <div className="section-label">NGPL PLAYER LOCATIONS</div>
           <h1 className="page-header__title">
             PLAYERS FROM <span className="gold-text">ACROSS INDIA</span>
           </h1>
           <p className="page-header__sub">
-            NGPL brings together aspiring cricketers from multiple cities and regions across India.
+            NGPL brings together aspiring cricketers from cities and regions across India.
           </p>
         </div>
       </div>
@@ -47,14 +47,22 @@ export default function Venue() {
         {/* Locations Grid */}
         <div className="locations-grid reveal">
           {[
-            'Visakhapatnam (Vizag)',
-            'Hyderabad',
-            'Bangalore',
+            'Agra',
+            'Delhi',
+            'Jaipur',
+            'Jammu',
             'Bhopal',
             'Nagpur',
-            'Haryana',
-            'Delhi',
-            'Pune'
+            'Raipur',
+            'Visakhapatnam (Vizag)',
+            'Mumbai',
+            'Kerala',
+            'Bangalore',
+            'Chennai',
+            'Punjab',
+            'Pune',
+            'Hyderabad',
+            'Haryana'
           ].map((loc, i) => (
             <div key={i} className="location-card">
               <MapPin size={24} className="location-card__icon" />

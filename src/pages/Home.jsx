@@ -592,21 +592,29 @@ export default function Home() {
       {/* ===================== VENUE ===================== */}
       <section className="home-section home-venue">
         <div className="section">
-          <div className="section-label reveal">Tournament Locations</div>
+          <div className="section-label reveal">NGPL PLAYER LOCATIONS</div>
           <h2 className="section-title reveal reveal-delay-1">
             PLAYERS FROM <span className="gold-text">ACROSS INDIA</span>
           </h2>
 
           <div className="locations-grid reveal reveal-delay-2" style={{ marginTop: '3rem' }}>
             {[
-              'Visakhapatnam (Vizag)',
-              'Hyderabad',
-              'Bangalore',
+              'Agra',
+              'Delhi',
+              'Jaipur',
+              'Jammu',
               'Bhopal',
               'Nagpur',
-              'Haryana',
-              'Delhi',
-              'Pune'
+              'Raipur',
+              'Visakhapatnam (Vizag)',
+              'Mumbai',
+              'Kerala',
+              'Bangalore',
+              'Chennai',
+              'Punjab',
+              'Pune',
+              'Hyderabad',
+              'Haryana'
             ].map((loc, i) => (
               <div key={i} className="location-card">
                 <MapPin size={24} className="location-card__icon" />
